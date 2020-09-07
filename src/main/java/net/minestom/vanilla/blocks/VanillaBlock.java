@@ -127,8 +127,16 @@ public abstract class VanillaBlock extends CustomBlock {
     public Data readBlockEntity(NBTCompound nbt, Instance instance, BlockPosition position, Data originalData) {
         return originalData;
     }
-
+    /**
+     * Gets all possible BlockStates of this block type.
+     * @return all possible BlockStates
+     */
     public BlockStates getBlockStates() {
         return blockStates;
+    }
+    
+    static public BlockState getBlockState(Instance instance, BlockPosition position) {
+    	VanillaBlock block = (VanillaBlock) instance.getCustomBlock(position);
+    	return  block.getBlockStates().fromStateID(instance.getBlockStateId(position));
     }
 }
