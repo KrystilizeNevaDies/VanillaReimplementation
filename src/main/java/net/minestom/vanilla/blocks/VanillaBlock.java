@@ -134,7 +134,12 @@ public abstract class VanillaBlock extends CustomBlock {
     public BlockStates getBlockStates() {
         return blockStates;
     }
-    
+    /**
+     * Gets the BlockState of the block at the specified position in the specified instance.
+     * @param instance instance in which the BlockState is being read from
+     * @param position position of the block to be read
+     * @return
+     */
     static public BlockState getBlockState(Instance instance, BlockPosition position) {
     	VanillaBlock block = (VanillaBlock) instance.getCustomBlock(position);
     	return  block.getBlockStates().fromStateID(instance.getBlockStateId(position));
