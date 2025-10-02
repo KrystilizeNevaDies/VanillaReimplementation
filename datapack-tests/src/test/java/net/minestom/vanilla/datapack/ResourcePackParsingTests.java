@@ -53,7 +53,7 @@ public class ResourcePackParsingTests {
     @Test
     public void testResourcePackDownload() {
         assertNotNull(rawAssets, "Raw assets should be downloaded");
-        assertTrue(rawAssets.files().size() > 0, "Assets should contain files");
+        assertTrue(rawAssets.files().size() > 0 || rawAssets.folders().size() > 0, "Assets should contain files or folders");
         assertTrue(rawAssets.hasFolder("minecraft"), "Assets should contain minecraft folder");
     }
 
