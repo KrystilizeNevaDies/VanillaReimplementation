@@ -56,13 +56,7 @@ public class SpecificParsingTests {
         
         // Find a loot table to test
         Collection<String> files = lootTables.files();
-        
-        if (files.isEmpty()) {
-            System.out.println("No loot table files found - this is acceptable for client JAR");
-            // Test that the structure works even with no files
-            assertNotNull(lootTables, "Loot table system should be initialized");
-            return;
-        }
+        assertFalse(files.isEmpty(), "Should have loot table files from server JAR");
         
         String testFile = files.iterator().next();
         LootTable lootTable = lootTables.file(testFile);

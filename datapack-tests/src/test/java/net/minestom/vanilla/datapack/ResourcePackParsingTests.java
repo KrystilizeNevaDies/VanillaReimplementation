@@ -73,41 +73,38 @@ public class ResourcePackParsingTests {
         Datapack.NamespacedData minecraftData = datapack.namespacedData().get("minecraft");
         assertNotNull(minecraftData, "Minecraft namespace should exist");
         
-        // Check both parsed datapack loot tables and raw assets
         FileSystem<LootTable> lootTables = minecraftData.loot_tables();
         assertNotNull(lootTables, "Loot tables should be loaded");
-        
-        // Also check raw assets like the existing LootTableTests
-        FileSystem<ByteArray> rawData = vri.feature(MojangDataFeature.class).latestAssets();
-        FileSystem<String> rawLootTables = rawData.map(byteArray -> byteArray.toCharacterString());
-        boolean hasRawLootTables = false;
-        if (rawLootTables.hasFolder("minecraft") && rawLootTables.folder("minecraft").hasFolder("loot_tables")) {
-            FileSystem<String> rawLootTablesFolder = rawLootTables.folder("minecraft", "loot_tables");
-            System.out.println("Raw loot table files count: " + rawLootTablesFolder.files().size());
-            System.out.println("Raw loot table folders: " + rawLootTablesFolder.folders());
-            hasRawLootTables = rawLootTablesFolder.files().size() > 0 || rawLootTablesFolder.folders().size() > 0;
-        } else {
-            System.out.println("No raw loot_tables folder found");
-        }
         
         Collection<String> lootTableFiles = lootTables.files();
         Collection<String> lootTableFolders = lootTables.folders();
         
         // Debug: Print what we actually have
-        System.out.println("Parsed loot table files count: " + lootTableFiles.size());
-        System.out.println("Parsed loot table folders count: " + lootTableFolders.size());
-        System.out.println("Parsed loot table folders: " + lootTableFolders);
+        System.out.println("Loot table files count: " + lootTableFiles.size());
+        System.out.println("Loot table folders count: " + lootTableFolders.size());
+        System.out.println("Loot table folders: " + lootTableFolders);
         
         // Also check other systems to see if they have data
         System.out.println("Recipes count: " + minecraftData.recipes().files().size());
+        System.out.println("Advancements count: " + minecraftData.advancements().files().size());
+        System.out.println("Structures count: " + minecraftData.structures().files().size());
         
-        // The test should pass if loot table parsing works (even if no loot tables are present in the vanilla client JAR)
-        // The important thing is that the parsing infrastructure is working
-        System.out.println("Loot table parsing infrastructure is working correctly");
+        // With server JAR, we should have loot table files
+        assertTrue(lootTableFiles.size() > 0 || lootTableFolders.size() > 0, "Should have loot table files or folders from server JAR");
         
-        // Test that we can at least create and parse a loot table (even if none exist in the vanilla data)
-        // This validates that the parsing code itself works
-        assertTrue(true, "Loot table parsing infrastructure is functional");
+        // Test parsing of specific loot tables
+        if (lootTables.hasFolder("blocks")) {
+            FileSystem<LootTable> blockLootTables = lootTables.folder("blocks");
+            Collection<String> blockFiles = blockLootTables.files();
+            assertTrue(blockFiles.size() > 0, "Should have block loot table files");
+            
+            // Test a specific loot table
+            String firstFile = blockFiles.iterator().next();
+            LootTable lootTable = blockLootTables.file(firstFile);
+            assertNotNull(lootTable, "Loot table should be parsed successfully");
+            assertNotNull(lootTable.pools(), "Loot table should have pools");
+        }
+    }
     }
 
     @Test
@@ -140,9 +137,8 @@ public class ResourcePackParsingTests {
         System.out.println("Advancement folders count: " + advancementFolders.size());
         System.out.println("Advancement folders: " + advancementFolders);
         
-        // The vanilla client JAR might not contain advancement files
-        // Test that the parsing infrastructure works regardless
-        System.out.println("Advancement parsing infrastructure is working correctly");
+        // With server JAR, we should have advancement files
+        assertTrue(advancementFiles.size() > 0 || advancementFolders.size() > 0, "Should have advancement files or folders from server JAR");
         
         // Test parsing of an advancement if we have files
         if (advancementFiles.size() > 0) {
@@ -150,8 +146,7 @@ public class ResourcePackParsingTests {
             Advancement advancement = advancements.file(firstAdvancementFile);
             assertNotNull(advancement, "Advancement should be parsed successfully");
         }
-        
-        assertTrue(true, "Advancement parsing infrastructure is functional");
+    }
     }
 
     @Test

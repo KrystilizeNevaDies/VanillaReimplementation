@@ -88,13 +88,12 @@ public class ResourcePackErrorHandlingTests {
         int recipeCount = minecraftData.recipes().files().size();
         int advancementCount = minecraftData.advancements().files().size();
         
-        // Only recipes are guaranteed to be in the client JAR
+        // With server JAR, we should have all types of content
+        assertTrue(lootTableCount > 0, "Should have parsed loot tables from server JAR");
         assertTrue(recipeCount > 0, "Should have parsed recipes");
+        assertTrue(advancementCount > 0, "Should have parsed advancements from server JAR");
         
-        // Loot tables and advancements might not be in client JAR
-        System.out.println("Loot tables: " + lootTableCount + ", Recipes: " + recipeCount + ", Advancements: " + advancementCount);
-        
-        // Total should be substantial for a full vanilla datapack (recipes are enough)
+        // Total should be substantial for a full vanilla datapack
         int totalFiles = lootTableCount + recipeCount + advancementCount;
         assertTrue(totalFiles > 50, "Should have substantial number of parsed files");
     }
