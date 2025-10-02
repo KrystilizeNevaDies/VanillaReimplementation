@@ -337,12 +337,7 @@ public class DatapackLoader {
 
     private static Block blockFromJson(JsonReader reader) throws IOException {
         return JsonUtils.typeMapMapped(reader, Map.of(
-                JsonReader.Token.STRING, json -> {
-                    String str = json.nextString();
-                    // Use the Key adapter to handle tag references properly
-                    Key key = str.startsWith("#") ? new Tag(str.substring(1)) : Key.key(str);
-                    return Block.fromKey(key);
-                },
+                JsonReader.Token.STRING, json -> Block.fromKey(json.nextString()),
                 JsonReader.Token.BEGIN_OBJECT, json -> DatapackLoader.moshi(BlockState.class).apply(json).toMinestom()
         ));
     }

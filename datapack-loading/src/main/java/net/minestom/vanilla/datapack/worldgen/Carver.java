@@ -56,7 +56,7 @@ public record Carver(Key type, BaseConfig config) {
         HeightProvider lava_level();
 
         //  replaceable: Blocks that can be carved. Can be a block ID, a block tag, or a list of block IDs.
-        JsonUtils.SingleOrList<Block> replaceable();
+        JsonUtils.SingleOrList<Key> replaceable();
 
         // debug_settings: (optional) Replaces blocks in the carved areas for debugging.
         //
@@ -75,7 +75,7 @@ public record Carver(Key type, BaseConfig config) {
     }
 
     public record Config(float probability, HeightProvider y, HeightProvider lava_level,
-                   JsonUtils.SingleOrList<Block> replaceable, @Optional BaseConfig.DebugSettings debug_settings) implements BaseConfig {
+                   JsonUtils.SingleOrList<Key> replaceable, @Optional BaseConfig.DebugSettings debug_settings) implements BaseConfig {
     }
 
     // If carver type is cave or nether_cave, additional fields are as follows:
@@ -84,7 +84,7 @@ public record Carver(Key type, BaseConfig config) {
     // vertical_radius_multiplier: Vertically scales cave tunnels. Doesn't affect the length of tunnels.
     // floor_level: Value between -1.0 and 1.0 (both inclusive). Change the shape of the cave's horizontal floor. If 0.0, carves the terrain with ellipsoids. If 1.0, carves with upper semi-ellipsoids, resulting in a level floor.
     public record CaveConfig(float probability, HeightProvider y, HeightProvider lava_level,
-                      JsonUtils.SingleOrList<Block> replaceable, @Optional BaseConfig.DebugSettings debug_settings,
+                      JsonUtils.SingleOrList<Key> replaceable, @Optional BaseConfig.DebugSettings debug_settings,
                       FloatProvider yScale, FloatProvider vertical_radius_multiplier,
                       FloatProvider floor_level) implements BaseConfig {
     }
@@ -94,7 +94,7 @@ public record Carver(Key type, BaseConfig config) {
     // vertical_rotation: Vertical rotation as a canyon extends.
     //  shape: The shape to use for the ravine.
     public record CanyonConfig(float probability, HeightProvider y, HeightProvider lava_level,
-                        JsonUtils.SingleOrList<Block> replaceable, @Optional BaseConfig.DebugSettings debug_settings,
+                        JsonUtils.SingleOrList<Key> replaceable, @Optional BaseConfig.DebugSettings debug_settings,
                         FloatProvider yScale, FloatProvider vertical_rotation, Shape shape) implements BaseConfig {
         //  distance_factor: Scales the length of canyons. Higher values make canyons longer.
         // thickness: Scales the breadth and height of canyons.
