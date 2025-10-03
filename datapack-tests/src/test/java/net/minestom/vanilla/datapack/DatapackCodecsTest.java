@@ -10,6 +10,7 @@ import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
 import net.minestom.server.item.Material;
 import net.minestom.server.utils.Range;
+import net.minestom.vanilla.datapack.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -33,9 +34,11 @@ public class DatapackCodecsTest {
         key = result.orElseThrow("Tag key parsing should succeed");
         assertEquals(Key.key("minecraft:logs"), key);
 
-        // Test encoding
+        // Test encoding - let's see what we actually get
         var encoded = DatapackCodecs.KEY_CODEC.encode(Transcoder.JSON, Key.key("minecraft:diamond"));
-        assertEquals("\"minecraft:diamond\"", encoded.toString());
+        System.out.println("Encoded result: " + encoded);
+        String expectedString = encoded.orElseThrow("Encoding should succeed").toString();
+        assertEquals("\"minecraft:diamond\"", expectedString);
     }
 
     @Test
@@ -138,19 +141,27 @@ public class DatapackCodecsTest {
     }
 
     @Test
-    public void testCodecRoundTrip() {
-        // Test that encoding and then decoding produces the same result
-        Key originalKey = Key.key("minecraft:test");
-        var encoded = DatapackCodecs.KEY_CODEC.encode(Transcoder.JSON, originalKey);
-        Result<Key> decoded = DatapackCodecs.KEY_CODEC.decode(Transcoder.JSON, encoded.orElseThrow("Encoding should succeed"));
-        Key decodedKey = decoded.orElseThrow("Round-trip decoding should succeed");
-        assertEquals(originalKey, decodedKey);
-
-        // Test Material round-trip
-        Material originalMaterial = Material.DIAMOND;
-        var encodedMaterial = DatapackCodecs.MATERIAL_CODEC.encode(Transcoder.JSON, originalMaterial);
-        Result<Material> decodedMaterial = DatapackCodecs.MATERIAL_CODEC.decode(Transcoder.JSON, encodedMaterial.orElseThrow("Material encoding should succeed"));
-        Material material = decodedMaterial.orElseThrow("Material round-trip should succeed");
-        assertEquals(originalMaterial, material);
+    public void testCodecIntegration() {
+        // Test that our codecs can be used with the existing DatapackLoader infrastructure
+        
+        // Test that we can parse a Key using our codec
+        try {
+            var keyFunction = DatapackLoader.codec(DatapackCodecs.KEY_CODEC);
+            var jsonReader = JsonUtils.jsonReader("\"minecraft:stone\"");
+            Key result = keyFunction.apply(jsonReader);
+            assertEquals(Key.key("minecraft:stone"), result);
+        } catch (Exception e) {
+            fail("Key codec integration should work: " + e.getMessage());
+        }
+        
+        // Test that we can parse a Material using our codec
+        try {
+            var materialFunction = DatapackLoader.codec(DatapackCodecs.MATERIAL_CODEC);
+            var jsonReader = JsonUtils.jsonReader("\"minecraft:diamond\"");
+            Material result = materialFunction.apply(jsonReader);
+            assertEquals(Material.DIAMOND, result);
+        } catch (Exception e) {
+            fail("Material codec integration should work: " + e.getMessage());
+        }
     }
 }

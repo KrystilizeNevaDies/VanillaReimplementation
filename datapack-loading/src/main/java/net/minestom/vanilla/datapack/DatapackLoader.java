@@ -82,13 +82,16 @@ public class DatapackLoader {
         register(builder, Enchantment.class, DatapackLoader::enchantmentFromJson);
         register(builder, EntityType.class, DatapackLoader::entityTypeFromJson);
         register(builder, Material.class, DatapackLoader::materialFromJson);
-        register(builder, Component.class, reader -> {
-            GsonComponentSerializer serializer = GsonComponentSerializer.gson();
-            return serializer.deserialize(reader.nextSource().readUtf8());
-        });
+        
+        // Register codec-based alternatives for new parsing - these can coexist with the Moshi adapters
         register(builder, Key.class, reader -> {
             String str = reader.nextString();
             return str.startsWith("#") ? new Tag(str.substring(1)) : Key.key(str);
+        });
+        
+        register(builder, Component.class, reader -> {
+            GsonComponentSerializer serializer = GsonComponentSerializer.gson();
+            return serializer.deserialize(reader.nextSource().readUtf8());
         });
         register(builder, Range.Float.class, DatapackLoader::floatRangeFromJson);
 
@@ -320,6 +323,20 @@ public class DatapackLoader {
         JsonUtils.IoFunction<JsonReader, Object> function = moshi().adapter(type)::fromJson;
         //noinspection unchecked
         return (JsonUtils.IoFunction<JsonReader, T>) function;
+    }
+
+    /**
+     * Get a codec-based parser for the given type.
+     * This provides an alternative to the Moshi-based parsing for types that have codec implementations.
+     */
+    public static <T> JsonUtils.IoFunction<JsonReader, T> codec(net.minestom.server.codec.Codec<T> codec) {
+        return reader -> {
+            // Convert JsonReader content to JsonElement for codec processing
+            String jsonContent = reader.nextSource().readUtf8();
+            var jsonElement = com.google.gson.JsonParser.parseString(jsonContent);
+            var result = codec.decode(net.minestom.server.codec.Transcoder.JSON, jsonElement);
+            return result.orElseThrow("Failed to decode using codec");
+        };
     }
 
     private static CompoundBinaryTag nbtCompoundFromJson(JsonReader reader) throws IOException {
