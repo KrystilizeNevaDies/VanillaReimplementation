@@ -19,17 +19,9 @@ public class CodecMigrationExample {
         String jsonMaterial = "\"minecraft:diamond\"";
         String jsonKey = "\"minecraft:stone\"";
 
-        // OLD WAY (legacy Moshi-based)
-        // This still works and is preserved for backward compatibility
-        var legacyMaterialParser = DatapackLoader.moshi(Material.class);
-        var legacyKeyParser = DatapackLoader.moshi(Key.class);
+        // OLD WAY (legacy parsing - now replaced with codec system)
+        // This demonstrates how the old system would have worked
         
-        var materialJsonReader = JsonUtils.jsonReader(jsonMaterial);
-        var keyJsonReader = JsonUtils.jsonReader(jsonKey);
-        
-        Material legacyMaterial = legacyMaterialParser.apply(materialJsonReader);
-        Key legacyKey = legacyKeyParser.apply(keyJsonReader);
-
         // NEW WAY (codec-based)
         // More efficient and consistent with Minecraft's internal systems
         var codecMaterialParser = DatapackLoader.codec(DatapackCodecs.MATERIAL_CODEC);
@@ -41,13 +33,8 @@ public class CodecMigrationExample {
         Material codecMaterial = codecMaterialParser.apply(materialJsonReader2);
         Key codecKey = codecKeyParser.apply(keyJsonReader2);
 
-        // Results are equivalent
-        assert legacyMaterial.equals(codecMaterial);
-        assert legacyKey.equals(codecKey);
-        
-        System.out.println("Legacy material: " + legacyMaterial);
         System.out.println("Codec material: " + codecMaterial);
-        System.out.println("Results match: " + legacyMaterial.equals(codecMaterial));
+        System.out.println("Codec key: " + codecKey);
     }
 
     /**
