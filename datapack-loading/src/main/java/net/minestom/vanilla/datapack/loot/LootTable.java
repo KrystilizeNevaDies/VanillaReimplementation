@@ -38,7 +38,7 @@ public record LootTable(@Nullable String type, @Nullable List<LootFunction> func
 
             Key type();
 
-            static Pool.Entry fromJson(JsonReader reader) throws IOException {
+            static Pool.Entry fromJson(JsonReader reader) throws Exception {
                 return JsonUtils.unionStringTypeAdapted(reader, "type", type -> switch(type) {
                     case "minecraft:item" -> Pool.Entry.Item.class;
                     case "minecraft:tag" -> Pool.Entry.Tag.class;

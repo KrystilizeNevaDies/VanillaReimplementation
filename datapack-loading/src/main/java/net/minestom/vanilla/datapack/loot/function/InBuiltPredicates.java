@@ -87,7 +87,7 @@ interface InBuiltPredicates {
         public interface Property {
             boolean test(Block block, String value);
 
-            static Property fromJson(JsonReader reader) throws IOException {
+            static Property fromJson(JsonReader reader) throws Exception {
                 return JsonUtils.typeMapMapped(reader, Map.of(
                         JsonReader.Token.STRING, (JsonUtils.IoFunction<JsonReader, Property>) json -> new Value(json.nextString()),
                         JsonReader.Token.BEGIN_OBJECT, DatapackLoader.moshi(Range.class)
@@ -174,7 +174,7 @@ interface InBuiltPredicates {
         public sealed interface Score {
             boolean test();
 
-            static Score fromJson(JsonReader reader) throws IOException {
+            static Score fromJson(JsonReader reader) throws Exception {
                 return JsonUtils.typeMapMapped(reader, Map.of(
                         JsonReader.Token.NUMBER, DatapackLoader.moshi(Value.class),
                         JsonReader.Token.BEGIN_OBJECT, DatapackLoader.moshi(Range.class)
@@ -392,7 +392,7 @@ interface InBuiltPredicates {
 
         public sealed interface Value {
 
-            static Value fromJson(JsonReader reader) throws IOException {
+            static Value fromJson(JsonReader reader) throws Exception {
                 return JsonUtils.typeMapMapped(reader, Map.of(
                         JsonReader.Token.NUMBER, DatapackLoader.moshi(Single.class),
                         JsonReader.Token.BEGIN_OBJECT, DatapackLoader.moshi(MinMax.class)
@@ -429,7 +429,7 @@ interface InBuiltPredicates {
         }
 
         public sealed interface Range {
-            static Range fromJson(JsonReader reader) throws IOException {
+            static Range fromJson(JsonReader reader) throws Exception {
                 return JsonUtils.typeMapMapped(reader, Map.of(
                         JsonReader.Token.NUMBER, DatapackLoader.moshi(Single.class),
                         JsonReader.Token.BEGIN_OBJECT, DatapackLoader.moshi(MinMax.class)

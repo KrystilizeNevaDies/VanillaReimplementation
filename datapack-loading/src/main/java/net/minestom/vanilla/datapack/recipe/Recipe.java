@@ -116,6 +116,11 @@ public interface Recipe {
         public @NotNull Key type() {
             return Key.key("minecraft:blasting");
         }
+        
+        @Override
+        public @NotNull List<Ingredient> ingredient() {
+            return ingredient.asList();
+        }
     }
 
     record CampfireCooking(String group, JsonUtils.SingleOrList<Ingredient> ingredient, SingleResult result,
@@ -123,6 +128,13 @@ public interface Recipe {
         @Override
         public @NotNull Key type() {
             return Key.key("minecraft:campfire_cooking");
+        }
+        
+        @Override
+        public @NotNull List<Ingredient> ingredient() {
+            return ingredient.asList();
+        }
+    }
         }
     }
 

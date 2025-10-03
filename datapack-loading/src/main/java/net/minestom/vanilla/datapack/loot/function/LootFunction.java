@@ -27,7 +27,7 @@ public interface LootFunction extends InBuiltLootFunctions {
      */
     ItemStack apply(Context context);
 
-    static LootFunction fromJson(JsonReader reader) throws IOException {
+    static LootFunction fromJson(JsonReader reader) throws Exception {
         return JsonUtils.unionStringTypeMapAdapted(reader, "function", Map.ofEntries(
                 Map.entry("minecraft:apply_bonus", ApplyBonus.class),
                 Map.entry("minecraft:copy_name", CopyName.class),
