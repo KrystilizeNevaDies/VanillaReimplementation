@@ -105,7 +105,6 @@ public class ResourcePackParsingTests {
             assertNotNull(lootTable.pools(), "Loot table should have pools");
         }
     }
-    }
 
     @Test
     public void testRecipeParsing() {
@@ -146,7 +145,6 @@ public class ResourcePackParsingTests {
             Advancement advancement = advancements.file(firstAdvancementFile);
             assertNotNull(advancement, "Advancement should be parsed successfully");
         }
-    }
     }
 
     @Test
