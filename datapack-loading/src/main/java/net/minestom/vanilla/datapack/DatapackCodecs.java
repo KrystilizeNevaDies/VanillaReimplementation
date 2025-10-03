@@ -430,11 +430,198 @@ public class DatapackCodecs {
     }
     
     private static @NotNull Codec<LootFunction> createLootFunctionCodec() {
-        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
+        // Raw codec implementation for type discrimination based on "function" field
+        return Codec.STRING.transform(
+            jsonString -> {
+                try {
+                    com.google.gson.JsonElement element = com.google.gson.JsonParser.parseString(jsonString);
+                    if (!element.isJsonObject()) {
+                        throw new IllegalArgumentException("LootFunction must be a JSON object");
+                    }
+                    
+                    com.google.gson.JsonObject obj = element.getAsJsonObject();
+                    if (!obj.has("function")) {
+                        throw new IllegalArgumentException("LootFunction must have a 'function' field");
+                    }
+                    
+                    String function = obj.get("function").getAsString();
+                    
+                    // Raw type discrimination - no utility methods
+                    return switch (function) {
+                        case "minecraft:apply_bonus" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'apply_bonus' not yet implemented in raw codec");
+                        }
+                        case "minecraft:copy_name" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'copy_name' not yet implemented in raw codec");
+                        }
+                        case "minecraft:copy_nbt" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'copy_nbt' not yet implemented in raw codec");
+                        }
+                        case "minecraft:copy_state" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'copy_state' not yet implemented in raw codec");
+                        }
+                        case "minecraft:enchant_randomly" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'enchant_randomly' not yet implemented in raw codec");
+                        }
+                        case "minecraft:enchant_with_levels" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'enchant_with_levels' not yet implemented in raw codec");
+                        }
+                        case "minecraft:exploration_map" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'exploration_map' not yet implemented in raw codec");
+                        }
+                        case "minecraft:explosion_decay" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'explosion_decay' not yet implemented in raw codec");
+                        }
+                        case "minecraft:fill_player_head" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'fill_player_head' not yet implemented in raw codec");
+                        }
+                        case "minecraft:furnace_smelt" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'furnace_smelt' not yet implemented in raw codec");
+                        }
+                        case "minecraft:limit_count" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'limit_count' not yet implemented in raw codec");
+                        }
+                        case "minecraft:looting_enchant" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'looting_enchant' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_attributes" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_attributes' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_banner_pattern" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_banner_pattern' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_contents" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_contents' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_count" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_count' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_damage" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_damage' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_enchantments" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_enchantments' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_instrument" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_instrument' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_loot_table" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_loot_table' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_lore" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_lore' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_name" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_name' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_nbt" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_nbt' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_potion" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_potion' not yet implemented in raw codec");
+                        }
+                        case "minecraft:set_stew_effect" -> {
+                            throw new UnsupportedOperationException("LootFunction type 'set_stew_effect' not yet implemented in raw codec");
+                        }
+                        default -> throw new IllegalArgumentException("Unknown loot function: " + function);
+                    };
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to parse LootFunction from JSON: " + jsonString, e);
+                }
+            },
+            lootFunction -> {
+                throw new UnsupportedOperationException("LootFunction encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Predicate> createPredicateCodec() {
-        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
+        // Raw codec implementation for type discrimination based on "condition" field
+        return Codec.STRING.transform(
+            jsonString -> {
+                try {
+                    com.google.gson.JsonElement element = com.google.gson.JsonParser.parseString(jsonString);
+                    if (!element.isJsonObject()) {
+                        throw new IllegalArgumentException("Predicate must be a JSON object");
+                    }
+                    
+                    com.google.gson.JsonObject obj = element.getAsJsonObject();
+                    if (!obj.has("condition")) {
+                        throw new IllegalArgumentException("Predicate must have a 'condition' field");
+                    }
+                    
+                    String condition = obj.get("condition").getAsString();
+                    
+                    // Raw type discrimination - no utility methods
+                    return switch (condition) {
+                        case "minecraft:alternative" -> {
+                            // For now, throw exception indicating this specific type isn't implemented
+                            throw new UnsupportedOperationException("Predicate type 'alternative' not yet implemented in raw codec");
+                        }
+                        case "minecraft:block_state_property" -> {
+                            throw new UnsupportedOperationException("Predicate type 'block_state_property' not yet implemented in raw codec");
+                        }
+                        case "minecraft:damage_source_properties" -> {
+                            throw new UnsupportedOperationException("Predicate type 'damage_source_properties' not yet implemented in raw codec");
+                        }
+                        case "minecraft:entity_properties" -> {
+                            throw new UnsupportedOperationException("Predicate type 'entity_properties' not yet implemented in raw codec");
+                        }
+                        case "minecraft:entity_scores" -> {
+                            throw new UnsupportedOperationException("Predicate type 'entity_scores' not yet implemented in raw codec");
+                        }
+                        case "minecraft:inverted" -> {
+                            throw new UnsupportedOperationException("Predicate type 'inverted' not yet implemented in raw codec");
+                        }
+                        case "minecraft:killed_by_player" -> {
+                            throw new UnsupportedOperationException("Predicate type 'killed_by_player' not yet implemented in raw codec");
+                        }
+                        case "minecraft:location_check" -> {
+                            throw new UnsupportedOperationException("Predicate type 'location_check' not yet implemented in raw codec");
+                        }
+                        case "minecraft:match_tool" -> {
+                            throw new UnsupportedOperationException("Predicate type 'match_tool' not yet implemented in raw codec");
+                        }
+                        case "minecraft:random_chance" -> {
+                            throw new UnsupportedOperationException("Predicate type 'random_chance' not yet implemented in raw codec");
+                        }
+                        case "minecraft:random_chance_with_looting" -> {
+                            throw new UnsupportedOperationException("Predicate type 'random_chance_with_looting' not yet implemented in raw codec");
+                        }
+                        case "minecraft:reference" -> {
+                            throw new UnsupportedOperationException("Predicate type 'reference' not yet implemented in raw codec");
+                        }
+                        case "minecraft:survives_explosion" -> {
+                            throw new UnsupportedOperationException("Predicate type 'survives_explosion' not yet implemented in raw codec");
+                        }
+                        case "minecraft:table_bonus" -> {
+                            throw new UnsupportedOperationException("Predicate type 'table_bonus' not yet implemented in raw codec");
+                        }
+                        case "minecraft:time_check" -> {
+                            throw new UnsupportedOperationException("Predicate type 'time_check' not yet implemented in raw codec");
+                        }
+                        case "minecraft:value_check" -> {
+                            throw new UnsupportedOperationException("Predicate type 'value_check' not yet implemented in raw codec");
+                        }
+                        case "minecraft:weather_check" -> {
+                            throw new UnsupportedOperationException("Predicate type 'weather_check' not yet implemented in raw codec");
+                        }
+                        case "minecraft:any_of" -> {
+                            throw new UnsupportedOperationException("Predicate type 'any_of' not yet implemented in raw codec");
+                        }
+                        case "minecraft:all_of" -> {
+                            throw new UnsupportedOperationException("Predicate type 'all_of' not yet implemented in raw codec");
+                        }
+                        default -> throw new IllegalArgumentException("Unknown predicate condition: " + condition);
+                    };
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to parse Predicate from JSON: " + jsonString, e);
+                }
+            },
+            predicate -> {
+                throw new UnsupportedOperationException("Predicate encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<LootContext.Trait> createLootContextTraitCodec() {
