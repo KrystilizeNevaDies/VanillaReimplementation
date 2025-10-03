@@ -24,14 +24,12 @@ public class CodecMigrationExample {
         
         // NEW WAY (codec-based)
         // More efficient and consistent with Minecraft's internal systems
-        var codecMaterialParser = DatapackLoader.codec(DatapackCodecs.MATERIAL_CODEC);
-        var codecKeyParser = DatapackLoader.codec(DatapackCodecs.KEY_CODEC);
         
-        var materialJsonReader2 = JsonUtils.jsonReader(jsonMaterial);
-        var keyJsonReader2 = JsonUtils.jsonReader(jsonKey);
+        var materialJsonElement = JsonUtils.jsonReader(jsonMaterial);
+        var keyJsonElement = JsonUtils.jsonReader(jsonKey);
         
-        Material codecMaterial = codecMaterialParser.apply(materialJsonReader2);
-        Key codecKey = codecKeyParser.apply(keyJsonReader2);
+        Material codecMaterial = DatapackLoader.parseJsonElement(materialJsonElement, DatapackCodecs.MATERIAL_CODEC);
+        Key codecKey = DatapackLoader.parseJsonElement(keyJsonElement, DatapackCodecs.KEY_CODEC);
 
         System.out.println("Codec material: " + codecMaterial);
         System.out.println("Codec key: " + codecKey);
@@ -41,18 +39,16 @@ public class CodecMigrationExample {
      * Example showing advanced codec features that weren't available in legacy parsing.
      */
     public void advancedCodecFeatures() throws IOException {
-        // Legacy material mapping - automatically handled by codec
+        // Test legacy material mapping - automatically handled by codec
         String legacyScute = "\"minecraft:scute\"";
-        var materialParser = DatapackLoader.codec(DatapackCodecs.MATERIAL_CODEC);
-        Material scute = materialParser.apply(JsonUtils.jsonReader(legacyScute));
+        Material scute = DatapackLoader.parseJson(legacyScute, DatapackCodecs.MATERIAL_CODEC);
         
         // This automatically maps to the correct modern material
         assert scute == Material.TURTLE_SCUTE;
         
         // Tag reference parsing - handles # prefix automatically
         String tagReference = "\"#minecraft:logs\"";
-        var keyParser = DatapackLoader.codec(DatapackCodecs.KEY_CODEC);
-        Key tagKey = keyParser.apply(JsonUtils.jsonReader(tagReference));
+        Key tagKey = DatapackLoader.parseJson(tagReference, DatapackCodecs.KEY_CODEC);
         
         // The # prefix is automatically stripped
         assert tagKey.equals(Key.key("minecraft:logs"));

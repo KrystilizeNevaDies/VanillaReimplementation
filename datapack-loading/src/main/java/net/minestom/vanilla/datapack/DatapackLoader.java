@@ -24,6 +24,7 @@ import net.minestom.vanilla.datapack.worldgen.Structure;
 import net.minestom.vanilla.datapack.worldgen.random.WorldgenRandom;
 import net.minestom.vanilla.files.ByteArray;
 import net.minestom.vanilla.files.FileSystem;
+import com.squareup.moshi.JsonAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,10 +89,83 @@ public class DatapackLoader {
     }
 
     /**
+     * Parse JSON string directly using a codec.
+     */
+    public static <T> T parseJson(String jsonString, Codec<T> codec) {
+        var jsonElement = com.google.gson.JsonParser.parseString(jsonString);
+        var result = codec.decode(Transcoder.JSON, jsonElement);
+        return result.orElseThrow("Failed to decode JSON: " + jsonString);
+    }
+
+    /**
+     * Parse JsonElement using a codec.
+     */
+    public static <T> T parseJsonElement(com.google.gson.JsonElement jsonElement, Codec<T> codec) {
+        var result = codec.decode(Transcoder.JSON, jsonElement);
+        return result.orElseThrow("Failed to decode JsonElement");
+    }
+
+    /**
+     * Legacy moshi method for backward compatibility during migration.
+     * @deprecated Use codec-based parsing instead
+     */
+    @Deprecated
+    public static <T> JsonUtils.IoFunction<com.squareup.moshi.JsonReader, T> moshi(Class<? extends T> clazz) {
+        // Convert to codec-based parsing
+        return reader -> {
+            String jsonContent = reader.nextSource().readUtf8();
+            Codec<T> codec = getCodecForClass((Class<T>) clazz);
+            return parseJson(jsonContent, codec);
+        };
+    }
+
+    /**
+     * Legacy moshi method for backward compatibility during migration.
+     * @deprecated Use codec-based parsing instead
+     */
+    @Deprecated
+    public static <T> JsonUtils.IoFunction<com.squareup.moshi.JsonReader, T> moshi(java.lang.reflect.Type type) {
+        // For generic types, try to extract the raw class
+        return reader -> {
+            String jsonContent = reader.nextSource().readUtf8();
+            if (type instanceof Class<?>) {
+                Codec<T> codec = getCodecForClass((Class<T>) type);
+                return parseJson(jsonContent, codec);
+            }
+            throw new UnsupportedOperationException("Generic type parsing not yet supported: " + type);
+        };
+    }
+
+    /**
+     * Legacy jsonAdaptor method for backward compatibility during migration.
+     * @deprecated Use codec-based parsing instead
+     */
+    @Deprecated
+    public static <T> JsonAdapter<T> jsonAdaptor(Class<T> clazz) {
+        return new JsonAdapter<T>() {
+            @Override
+            public T fromJson(com.squareup.moshi.JsonReader reader) throws java.io.IOException {
+                try {
+                    String jsonContent = reader.nextSource().readUtf8();
+                    Codec<T> codec = getCodecForClass(clazz);
+                    return parseJson(jsonContent, codec);
+                } catch (Exception e) {
+                    throw new java.io.IOException("Failed to parse " + clazz.getSimpleName(), e);
+                }
+            }
+
+            @Override
+            public void toJson(com.squareup.moshi.JsonWriter writer, T value) throws java.io.IOException {
+                throw new UnsupportedOperationException("JSON writing not supported");
+            }
+        };
+    }
+
+    /**
      * Get the appropriate codec for a given class.
      */
     @SuppressWarnings("unchecked")
-    private static <T> Codec<T> getCodecForClass(Class<T> clazz) {
+    public static <T> Codec<T> getCodecForClass(Class<T> clazz) {
         // Map classes to their corresponding codecs
         if (clazz == Material.class) return (Codec<T>) DatapackCodecs.MATERIAL_CODEC;
         if (clazz == Key.class) return (Codec<T>) DatapackCodecs.KEY_CODEC;
@@ -100,6 +174,7 @@ public class DatapackLoader {
         if (clazz == Component.class) return (Codec<T>) DatapackCodecs.COMPONENT_CODEC;
         if (clazz == CompoundBinaryTag.class) return (Codec<T>) DatapackCodecs.NBT_COMPOUND_CODEC;
         if (clazz == Range.Float.class) return (Codec<T>) DatapackCodecs.FLOAT_RANGE_CODEC;
+        if (clazz == Range.class) return (Codec<T>) DatapackCodecs.FLOAT_RANGE_CODEC; // Handle generic Range
         if (clazz == Recipe.class) return (Codec<T>) DatapackCodecs.RECIPE_CODEC;
         if (clazz == LootTable.class) return (Codec<T>) DatapackCodecs.LOOT_TABLE_CODEC;
         if (clazz == LootFunction.class) return (Codec<T>) DatapackCodecs.LOOT_FUNCTION_CODEC;

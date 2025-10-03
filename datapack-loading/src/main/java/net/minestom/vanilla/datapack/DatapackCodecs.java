@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Comprehensive codec-based implementations for all datapack parsing, replacing the legacy Moshi system.
@@ -251,7 +252,21 @@ public class DatapackCodecs {
     // but wrap them in codec interfaces for now to maintain compatibility
     
     private static @NotNull Codec<Recipe> createRecipeCodec() {
-        return createDelegatingCodec("recipe", Recipe::fromJson);
+        // Create a map of recipe type to codec
+        Map<String, Codec<Recipe>> recipeCodecs = Map.of(
+                "minecraft:blasting", createFromJsonCodec("blasting", element -> parseRecipeType(element, "blasting")),
+                "minecraft:campfire_cooking", createFromJsonCodec("campfire_cooking", element -> parseRecipeType(element, "campfire_cooking")),
+                "minecraft:crafting_shaped", createFromJsonCodec("crafting_shaped", element -> parseRecipeType(element, "crafting_shaped")),
+                "minecraft:crafting_shapeless", createFromJsonCodec("crafting_shapeless", element -> parseRecipeType(element, "crafting_shapeless"))
+                // Add more as needed
+        );
+        return createUnionCodec("type", recipeCodecs);
+    }
+    
+    // Temporary helper method for recipe parsing
+    private static Recipe parseRecipeType(com.google.gson.JsonElement element, String type) {
+        // For now, throw an exception to indicate this needs proper implementation
+        throw new UnsupportedOperationException("Recipe parsing not yet fully converted to codecs: " + type);
     }
     
     private static @NotNull Codec<LootTable> createLootTableCodec() {
@@ -371,19 +386,33 @@ public class DatapackCodecs {
         });
     }
 
-    // Helper to create delegating codecs that wrap existing fromJson methods
-    private static <T> @NotNull Codec<T> createDelegatingCodec(String name, JsonUtils.IoFunction<com.squareup.moshi.JsonReader, T> fromJsonFunction) {
+    // Helper method to create a codec that delegates to existing fromJson methods
+    // This is a bridge pattern to allow gradual migration
+    private static <T> @NotNull Codec<T> createFromJsonCodec(String name, Function<com.google.gson.JsonElement, T> fromJsonFunction) {
         return Codec.STRING.transform(
                 jsonString -> {
                     try {
-                        var jsonReader = JsonUtils.jsonReader(jsonString);
-                        return fromJsonFunction.apply(jsonReader);
+                        var jsonElement = com.google.gson.JsonParser.parseString(jsonString);
+                        return fromJsonFunction.apply(jsonElement);
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to parse " + name + " from JSON: " + jsonString, e);
                     }
                 },
                 value -> {
                     throw new UnsupportedOperationException("Encoding not implemented for " + name);
+                }
+        );
+    }
+
+    // Create a union type codec that matches the pattern used by unionStringTypeAdapted
+    public static <T> @NotNull Codec<T> createUnionCodec(String typeKey, Map<String, Codec<T>> codecMap) {
+        return Codec.STRING.transform(
+                jsonString -> {
+                    var jsonElement = com.google.gson.JsonParser.parseString(jsonString);
+                    return JsonUtils.unionStringTypeMap(jsonElement, typeKey, codecMap);
+                },
+                value -> {
+                    throw new UnsupportedOperationException("Union codec encoding not implemented");
                 }
         );
     }

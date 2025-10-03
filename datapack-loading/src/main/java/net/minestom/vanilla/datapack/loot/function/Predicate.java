@@ -12,7 +12,7 @@ public interface Predicate extends InBuiltPredicates {
 
     boolean test(LootContext context);
 
-    static Predicate fromJson(JsonReader reader) throws IOException {
+    static Predicate fromJson(JsonReader reader) throws Exception {
         return JsonUtils.unionStringTypeAdapted(reader, "condition", condition -> switch (condition) {
             case "minecraft:alternative" -> Alternative.class;
             case "minecraft:block_state_property" -> BlockStateProperty.class;
