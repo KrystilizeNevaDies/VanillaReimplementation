@@ -1,7 +1,7 @@
 package net.minestom.vanilla.datapack.loot.function;
 
 import com.squareup.moshi.JsonReader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.loot.context.LootContext;
 
 import java.io.IOException;

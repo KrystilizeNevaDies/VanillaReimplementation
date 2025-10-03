@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonReader;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.vanilla.datapack.DatapackLoader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.json.Optional;
 import org.jetbrains.annotations.Nullable;
 
@@ -330,7 +330,7 @@ public record Biome(
             return JsonUtils.<CarversList>typeMap(reader, token -> switch (token) {
                 case STRING -> json -> new Single.Reference(Key.key(json.nextString()));
                 case BEGIN_OBJECT, BEGIN_ARRAY -> json -> {
-                    var singleOrList = JsonUtils.SingleOrList.<CarversList.Single>fromJson(CarversList.Single.class, json);
+                    var singleOrList = DatapackCodecs.SingleOrList.<CarversList.Single>fromJson(CarversList.Single.class, json);
                     if (!singleOrList.isList()) {
                         return new Single.Inlined(singleOrList.asObject().carver());
                     }

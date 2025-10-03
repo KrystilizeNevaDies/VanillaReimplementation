@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonReader;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.instance.block.Block;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.json.Optional;
 import net.minestom.vanilla.datapack.loot.function.Predicate;
 import net.minestom.vanilla.datapack.tags.ConditionsFor;
@@ -314,9 +314,9 @@ public record Advancement(Display display,
         // partner: Another format for "partner". Specifies a list of predicates that must pass in order for the criterion to be granted. The origin of the predicate is the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record BredAnimals(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> child,
-                           JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> parent,
-                           JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> partner) implements Conditions {
+        record BredAnimals(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> child,
+                           DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> parent,
+                           DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> partner) implements Conditions {
         }
 
         // minecraft:brewed_potion
@@ -348,7 +348,7 @@ public record Advancement(Display display,
         //: Another format for the victim. Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the victim hit by the lighting, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record ChanneledLightning(List<JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate>> victims) implements Conditions {
+        record ChanneledLightning(List<DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate>> victims) implements Conditions {
         }
 
         // Triggers after the player changes the structure of a beacon. (When the beacon updates itself). Available extra conditions:
@@ -399,8 +399,8 @@ public record Advancement(Display display,
         // zombie: Another format for "zombie". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the zombie villager, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record CuredZombieVillager(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> villager,
-                                   JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> zombie) implements Conditions {
+        record CuredZombieVillager(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> villager,
+                                   DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> zombie) implements Conditions {
         }
 
         // Triggers after the player gets a status effect applied or taken from them. Available extra conditions:
@@ -426,7 +426,7 @@ public record Advancement(Display display,
         // source: Another format for "source". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the source, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record EffectsChanged(Map<Key, Effect> effects, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> source) implements Conditions {
+        record EffectsChanged(Map<Key, Effect> effects, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> source) implements Conditions {
 
             public record Effect(boolean ambient, Count amplifier, Count duration, boolean visible) {
                 public interface Count {
@@ -516,7 +516,7 @@ public record Advancement(Display display,
         //    Tags common to all damage types[
         //
         //]
-        record EntityKilledPlayer(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity,
+        record EntityKilledPlayer(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity,
                                   ConditionsFor.DamageTypes killing_blow) implements Conditions {
         }
 
@@ -575,7 +575,7 @@ public record Advancement(Display display,
         //    All possible conditions for items[
         //
         //]
-        record FishingRodHooked(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity, ConditionsFor.Item item,
+        record FishingRodHooked(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity, ConditionsFor.Item item,
                                 ConditionsFor.Item rod) implements Conditions {
         }
 
@@ -692,7 +692,7 @@ public record Advancement(Display display,
         //    Tags common to all damage types[
         //
         //]
-        record KillMobNearSculkCatalyst(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity,
+        record KillMobNearSculkCatalyst(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity,
                                        ConditionsFor.Damage killing_blow) implements Conditions {
         }
 
@@ -714,7 +714,7 @@ public record Advancement(Display display,
         //: Another format for the victim. Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the victim, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record KilledByCrossbow(Count unique_entity_types, List<JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate>> victims) implements Conditions {
+        record KilledByCrossbow(Count unique_entity_types, List<DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate>> victims) implements Conditions {
             public interface Count {
                 record Value(int value) implements Count {
                 }
@@ -772,8 +772,8 @@ public record Advancement(Display display,
         // bystander: Another format for "bystander". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the bystander, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record LightningStrike(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> lightning,
-                               JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> bystander) implements Conditions {
+        record LightningStrike(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> lightning,
+                               DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> bystander) implements Conditions {
         }
 
         // minecraft:location
@@ -861,7 +861,7 @@ public record Advancement(Display display,
         // entity: Another format for "entity". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the entity, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record PlayerHurtEntity(ConditionsFor.Damage damage, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
+        record PlayerHurtEntity(ConditionsFor.Damage damage, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
         }
 
         // minecraft:player_interacted_with_entity
@@ -883,7 +883,7 @@ public record Advancement(Display display,
         // entity: Another format for "entity". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the entity, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record PlayerInteractedWithEntity(ConditionsFor.Item item, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
+        record PlayerInteractedWithEntity(ConditionsFor.Item item, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
         }
 
         // minecraft:player_killed_entity
@@ -905,7 +905,7 @@ public record Advancement(Display display,
         //    Tags common to all damage types[
         //
         //]
-        record PlayerKilledEntity(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity, ConditionsFor.Damage killing_blow) implements Conditions {
+        record PlayerKilledEntity(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity, ConditionsFor.Damage killing_blow) implements Conditions {
         }
 
         // minecraft:recipe_unlocked
@@ -993,7 +993,7 @@ public record Advancement(Display display,
         // entity: Another format for "entity". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the entity, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record SummonedEntity(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
+        record SummonedEntity(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
         }
 
         // minecraft:tame_animal
@@ -1009,7 +1009,7 @@ public record Advancement(Display display,
         // entity: Another format for "entity". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the entity, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record TameAnimal(JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
+        record TameAnimal(DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
         }
 
         // minecraft:target_hit
@@ -1029,7 +1029,7 @@ public record Advancement(Display display,
         // projectile: Another format for "projectile". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the projectile, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record TargetHit(int signal_strength, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> projectile) implements Conditions {
+        record TargetHit(int signal_strength, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> projectile) implements Conditions {
         }
 
         // minecraft:thrown_item_picked_up_by_entity
@@ -1051,7 +1051,7 @@ public record Advancement(Display display,
         // entity: Another format for "entity". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the entity, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record ThrownItemPickedUpByEntity(ConditionsFor.Item item, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
+        record ThrownItemPickedUpByEntity(ConditionsFor.Item item, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
         }
 
         // minecraft:thrown_item_picked_up_by_player
@@ -1073,7 +1073,7 @@ public record Advancement(Display display,
         // entity: Another format for "entity". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the entity, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record ThrownItemPickedUpByPlayer(ConditionsFor.Item item, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
+        record ThrownItemPickedUpByPlayer(ConditionsFor.Item item, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> entity) implements Conditions {
         }
 
         // minecraft:tick
@@ -1144,7 +1144,7 @@ public record Advancement(Display display,
         // villager: Another format for "villager". Specifies a list of predicates that must pass in order for the criterion to be granted. The checks are applied to the villager, with the origin being the position of the player that would get the advancement.
         //
         //    : A single predicate.
-        record VillagerTrade(ConditionsFor.Item item, JsonUtils.ObjectOrList<ConditionsFor.Entity, Predicate> villager) implements Conditions {
+        record VillagerTrade(ConditionsFor.Item item, DatapackCodecs.ObjectOrList<ConditionsFor.Entity, Predicate> villager) implements Conditions {
         }
 
         // minecraft:voluntary_exile

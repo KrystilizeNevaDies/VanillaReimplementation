@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonReader;
 import net.kyori.adventure.key.Key;
 import net.minestom.server.item.Material;
 import net.minestom.vanilla.datapack.DatapackLoader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.json.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -110,7 +110,7 @@ public interface Recipe {
     record SingleResult(Material id) {
     }
 
-    record Blasting(String group, @Optional String category, JsonUtils.SingleOrList<Ingredient> ingredient, SingleResult result,
+    record Blasting(String group, @Optional String category, DatapackCodecs.SingleOrList<Ingredient> ingredient, SingleResult result,
                     double experience, @Optional @Json(name = "cookingtime") Integer cookingTime) implements CookingRecipe {
         @Override
         public @NotNull Key type() {
@@ -123,7 +123,7 @@ public interface Recipe {
         }
     }
 
-    record CampfireCooking(String group, JsonUtils.SingleOrList<Ingredient> ingredient, SingleResult result,
+    record CampfireCooking(String group, DatapackCodecs.SingleOrList<Ingredient> ingredient, SingleResult result,
                            double experience, @Optional @Json(name = "cookingtime") Integer cookingTime) implements CookingRecipe {
         @Override
         public @NotNull Key type() {
@@ -135,8 +135,6 @@ public interface Recipe {
             return ingredient.asList();
         }
     }
-        }
-    }
 
     record Shaped(String group, @Optional String category, List<String> pattern, Map<Character, Ingredient> key, Result result) implements Recipe {
         @Override
@@ -145,15 +143,15 @@ public interface Recipe {
         }
     }
 
-    record Shapeless(String group, @Optional String category, JsonUtils.SingleOrList<Ingredient> ingredients, Result result) implements Recipe {
+    record Shapeless(String group, @Optional String category, DatapackCodecs.SingleOrList<Ingredient> ingredients, Result result) implements Recipe {
         @Override
         public @NotNull Key type() {
             return Key.key("minecraft:crafting_shapeless");
         }
     }
 
-    record Transmute(String group, @Optional String category, JsonUtils.SingleOrList<Ingredient> input,
-                     JsonUtils.SingleOrList<Ingredient> material, Result result) implements Recipe {
+    record Transmute(String group, @Optional String category, DatapackCodecs.SingleOrList<Ingredient> input,
+                     DatapackCodecs.SingleOrList<Ingredient> material, Result result) implements Recipe {
         @Override
         public @NotNull Key type() {
             return Key.key("minecraft:crafting_transmute");
@@ -255,7 +253,7 @@ public interface Recipe {
         }
     }
 
-    record Smelting(String group, @Optional String category, JsonUtils.SingleOrList<Ingredient> ingredient, SingleResult result,
+    record Smelting(String group, @Optional String category, DatapackCodecs.SingleOrList<Ingredient> ingredient, SingleResult result,
                     double experience, @Optional @Json(name = "cookingtime") Integer cookingTime) implements CookingRecipe {
         @Override
         public @NotNull Key type() {
@@ -263,7 +261,7 @@ public interface Recipe {
         }
     }
 
-    record Smoking(String group, JsonUtils.SingleOrList<Ingredient> ingredient, SingleResult result,
+    record Smoking(String group, DatapackCodecs.SingleOrList<Ingredient> ingredient, SingleResult result,
                    double experience, @Optional @Json(name = "cookingtime") Integer cookingTime) implements CookingRecipe {
         @Override
         public @NotNull Key type() {
@@ -271,7 +269,7 @@ public interface Recipe {
         }
     }
 
-    record Stonecutting(@Nullable String group, JsonUtils.SingleOrList<Ingredient> ingredient, Result result) implements Recipe {
+    record Stonecutting(@Nullable String group, DatapackCodecs.SingleOrList<Ingredient> ingredient, Result result) implements Recipe {
         @Override
         public @NotNull Key type() {
             return Key.key("minecraft:stonecutting");

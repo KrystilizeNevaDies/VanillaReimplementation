@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonReader;
 import net.kyori.adventure.key.Key;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.utils.Range;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.worldgen.noise.NormalNoise;
 import net.minestom.vanilla.datapack.worldgen.random.WorldgenRandom;
 import net.minestom.vanilla.datapack.worldgen.util.Util;

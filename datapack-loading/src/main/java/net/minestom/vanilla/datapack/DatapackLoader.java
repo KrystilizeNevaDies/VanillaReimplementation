@@ -12,7 +12,7 @@ import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.utils.Range;
 import net.minestom.vanilla.datapack.advancement.Advancement;
 import net.minestom.vanilla.datapack.dimension.DimensionType;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.loot.LootTable;
 import net.minestom.vanilla.datapack.loot.function.LootFunction;
 import net.minestom.vanilla.datapack.loot.function.Predicate;
@@ -75,10 +75,17 @@ public class DatapackLoader {
     }
 
     /**
+     * Simple function interface for JSON processing operations
+     */
+    public interface IoFunction<T, R> {
+        R apply(T t) throws Exception;
+    }
+
+    /**
      * Get a codec-based parser for the given codec.
      * This provides an alternative to the legacy Moshi-based parsing.
      */
-    public static <T> JsonUtils.IoFunction<com.squareup.moshi.JsonReader, T> codec(Codec<T> codec) {
+    public static <T> IoFunction<com.squareup.moshi.JsonReader, T> codec(Codec<T> codec) {
         return reader -> {
             // Convert JsonReader content to JsonElement for codec processing
             String jsonContent = reader.nextSource().readUtf8();
@@ -110,7 +117,7 @@ public class DatapackLoader {
      * @deprecated Use codec-based parsing instead
      */
     @Deprecated
-    public static <T> JsonUtils.IoFunction<com.squareup.moshi.JsonReader, T> moshi(Class<? extends T> clazz) {
+    public static <T> IoFunction<com.squareup.moshi.JsonReader, T> moshi(Class<? extends T> clazz) {
         // Convert to codec-based parsing
         return reader -> {
             String jsonContent = reader.nextSource().readUtf8();
@@ -124,7 +131,7 @@ public class DatapackLoader {
      * @deprecated Use codec-based parsing instead
      */
     @Deprecated
-    public static <T> JsonUtils.IoFunction<com.squareup.moshi.JsonReader, T> moshi(java.lang.reflect.Type type) {
+    public static <T> IoFunction<com.squareup.moshi.JsonReader, T> moshi(java.lang.reflect.Type type) {
         // For generic types, try to extract the raw class
         return reader -> {
             String jsonContent = reader.nextSource().readUtf8();

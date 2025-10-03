@@ -2,7 +2,7 @@ package net.minestom.vanilla.datapack.worldgen.noise;
 
 import com.squareup.moshi.JsonReader;
 import net.minestom.vanilla.datapack.DatapackLoader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 
 import java.io.IOException;
 

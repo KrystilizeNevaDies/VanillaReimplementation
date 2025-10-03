@@ -2,7 +2,7 @@ package net.minestom.vanilla.datapack.worldgen;
 
 import com.squareup.moshi.JsonReader;
 import net.minestom.vanilla.datapack.DatapackLoader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.worldgen.math.NumberFunction;
 
 import java.io.IOException;

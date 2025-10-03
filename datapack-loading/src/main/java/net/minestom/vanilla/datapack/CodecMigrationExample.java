@@ -2,7 +2,7 @@ package net.minestom.vanilla.datapack;
 
 import net.kyori.adventure.key.Key;
 import net.minestom.server.item.Material;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 
 import java.io.IOException;
 
@@ -25,8 +25,8 @@ public class CodecMigrationExample {
         // NEW WAY (codec-based)
         // More efficient and consistent with Minecraft's internal systems
         
-        var materialJsonElement = JsonUtils.jsonReader(jsonMaterial);
-        var keyJsonElement = JsonUtils.jsonReader(jsonKey);
+        var materialJsonElement = com.google.gson.JsonParser.parseString(jsonMaterial);
+        var keyJsonElement = com.google.gson.JsonParser.parseString(jsonKey);
         
         Material codecMaterial = DatapackLoader.parseJsonElement(materialJsonElement, DatapackCodecs.MATERIAL_CODEC);
         Key codecKey = DatapackLoader.parseJsonElement(keyJsonElement, DatapackCodecs.KEY_CODEC);

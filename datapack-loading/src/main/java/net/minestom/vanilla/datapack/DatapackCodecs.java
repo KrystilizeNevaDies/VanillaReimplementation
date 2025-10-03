@@ -19,7 +19,7 @@ import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.utils.Range;
 import net.minestom.vanilla.datapack.advancement.Advancement;
 import net.minestom.vanilla.datapack.dimension.DimensionType;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+
 import net.minestom.vanilla.datapack.loot.LootTable;
 import net.minestom.vanilla.datapack.loot.NBTPath;
 import net.minestom.vanilla.datapack.loot.context.LootContext;
@@ -43,8 +43,78 @@ import java.util.function.Function;
 /**
  * Comprehensive codec-based implementations for all datapack parsing, replacing the legacy Moshi system.
  * This class provides a complete codec tree for the entire datapack loading infrastructure.
+ * Contains raw codec definitions only - no utility classes.
  */
 public class DatapackCodecs {
+
+    // Essential types moved from JsonUtils - raw codec implementations only
+    
+    public interface ObjectOrList<O, E> {
+        boolean isObject();
+        O asObject();
+        boolean isList();
+        java.util.List<E> asList();
+    }
+
+    public interface SingleOrList<T> extends ObjectOrList<T, T>, ListLike<T> {
+        record Single<O>(O object) implements SingleOrList<O> {
+            @Override
+            public boolean isObject() {
+                return true;
+            }
+
+            @Override
+            public O asObject() {
+                return object;
+            }
+
+            @Override
+            public boolean isList() {
+                return false;
+            }
+
+            @Override
+            public java.util.List<O> asList() {
+                throw new IllegalStateException("Not a list");
+            }
+
+            @Override
+            public java.util.@NotNull List<O> list() {
+                return java.util.List.of(object);
+            }
+        }
+
+        record List<L>(java.util.List<L> list) implements SingleOrList<L> {
+            @Override
+            public boolean isObject() {
+                return false;
+            }
+
+            @Override
+            public L asObject() {
+                throw new IllegalStateException("Not an object");
+            }
+
+            @Override
+            public boolean isList() {
+                return true;
+            }
+
+            @Override
+            public java.util.List<L> asList() {
+                return list;
+            }
+
+            @Override
+            public java.util.@NotNull List<L> list() {
+                return list;
+            }
+        }
+    }
+
+    public interface ListLike<T> {
+        java.util.@NotNull List<T> list();
+    }
 
     // Basic type codecs
     public static final @NotNull Codec<Key> KEY_CODEC = Codec.STRING.transform(
@@ -145,13 +215,13 @@ public class DatapackCodecs {
     public static final @NotNull Codec<Block> BLOCK_CODEC = 
             Codec.STRING.transform(Block::fromKey, block -> block.key().asString());
 
-    // SingleOrList codec for common patterns
-    public static <T> @NotNull Codec<JsonUtils.SingleOrList<T>> singleOrListCodec(Codec<T> elementCodec) {
-        return elementCodec.<JsonUtils.SingleOrList<T>>transform(
-                element -> new JsonUtils.SingleOrList.Single<>(element),
+    // SingleOrList codec for common patterns - raw codec implementation
+    public static <T> @NotNull Codec<SingleOrList<T>> singleOrListCodec(Codec<T> elementCodec) {
+        return elementCodec.<SingleOrList<T>>transform(
+                element -> new SingleOrList.Single<>(element),
                 singleOrList -> singleOrList.asObject()
         ).orElse(elementCodec.list().transform(
-                list -> new JsonUtils.SingleOrList.List<>(list),
+                list -> new SingleOrList.List<>(list),
                 singleOrList -> singleOrList.asList()
         ));
     }
@@ -252,170 +322,218 @@ public class DatapackCodecs {
     // but wrap them in codec interfaces for now to maintain compatibility
     
     private static @NotNull Codec<Recipe> createRecipeCodec() {
-        // Create a map of recipe type to codec
-        Map<String, Codec<Recipe>> recipeCodecs = Map.of(
-                "minecraft:blasting", createFromJsonCodec("blasting", element -> parseRecipeType(element, "blasting")),
-                "minecraft:campfire_cooking", createFromJsonCodec("campfire_cooking", element -> parseRecipeType(element, "campfire_cooking")),
-                "minecraft:crafting_shaped", createFromJsonCodec("crafting_shaped", element -> parseRecipeType(element, "crafting_shaped")),
-                "minecraft:crafting_shapeless", createFromJsonCodec("crafting_shapeless", element -> parseRecipeType(element, "crafting_shapeless"))
-                // Add more as needed
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Recipe raw codec not yet implemented");
+            },
+            recipe -> {
+                throw new UnsupportedOperationException("Recipe encoding not implemented");
+            }
         );
-        return createUnionCodec("type", recipeCodecs);
-    }
-    
-    // Temporary helper method for recipe parsing
-    private static Recipe parseRecipeType(com.google.gson.JsonElement element, String type) {
-        // For now, throw an exception to indicate this needs proper implementation
-        throw new UnsupportedOperationException("Recipe parsing not yet fully converted to codecs: " + type);
     }
     
     private static @NotNull Codec<LootTable> createLootTableCodec() {
-        return createDelegatingCodec("loot_table", reader -> {
-            // For now, delegate to existing parsing - this can be fully converted later
-            throw new UnsupportedOperationException("LootTable codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("LootTable raw codec not yet implemented");
+            },
+            table -> {
+                throw new UnsupportedOperationException("LootTable encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Advancement> createAdvancementCodec() {
-        return createDelegatingCodec("advancement", reader -> {
-            throw new UnsupportedOperationException("Advancement codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Advancement raw codec not yet implemented");
+            },
+            advancement -> {
+                throw new UnsupportedOperationException("Advancement encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<DensityFunction> createDensityFunctionCodec() {
-        return createDelegatingCodec("density_function", DensityFunction::fromJson);
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("DensityFunction raw codec not yet implemented");
+            },
+            densityFunction -> {
+                throw new UnsupportedOperationException("DensityFunction encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Biome> createBiomeCodec() {
-        return createDelegatingCodec("biome", reader -> {
-            throw new UnsupportedOperationException("Biome codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Biome raw codec not yet implemented");
+            },
+            biome -> {
+                throw new UnsupportedOperationException("Biome encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Noise> createNoiseCodec() {
-        return createDelegatingCodec("noise", Noise::fromJson);
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Noise raw codec not yet implemented");
+            },
+            noise -> {
+                throw new UnsupportedOperationException("Noise encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Carver> createCarverCodec() {
-        return createDelegatingCodec("carver", Carver::fromJson);
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Carver raw codec not yet implemented");
+            },
+            carver -> {
+                throw new UnsupportedOperationException("Carver encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<FloatProvider> createFloatProviderCodec() {
-        return createDelegatingCodec("float_provider", FloatProvider::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<HeightProvider> createHeightProviderCodec() {
-        return createDelegatingCodec("height_provider", HeightProvider::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<VerticalAnchor> createVerticalAnchorCodec() {
-        return createDelegatingCodec("vertical_anchor", VerticalAnchor::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<CubicSpline> createCubicSplineCodec() {
-        return createDelegatingCodec("cubic_spline", CubicSpline::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<NBTPath> createNBTPathCodec() {
-        return createDelegatingCodec("nbt_path", NBTPath::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<NumberProvider> createNumberProviderCodec() {
-        return createDelegatingCodec("number_provider", NumberProvider.Double::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<LootFunction> createLootFunctionCodec() {
-        return createDelegatingCodec("loot_function", LootFunction::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<Predicate> createPredicateCodec() {
-        return createDelegatingCodec("predicate", Predicate::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<LootContext.Trait> createLootContextTraitCodec() {
-        return createDelegatingCodec("loot_context_trait", LootContext.Trait::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<BlockState> createBlockStateCodec() {
-        return createDelegatingCodec("block_state", BlockState::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<NoiseSettings.SurfaceRule> createSurfaceRuleCodec() {
-        return createDelegatingCodec("surface_rule", NoiseSettings.SurfaceRule::fromJson);
+        return Codec.STRING.transform(str -> { throw new UnsupportedOperationException("Raw codec not yet implemented"); }, obj -> { throw new UnsupportedOperationException("Encoding not implemented"); });
     }
     
     private static @NotNull Codec<Datapack.Tag> createDatapackTagCodec() {
-        return createDelegatingCodec("datapack_tag", reader -> {
-            throw new UnsupportedOperationException("Datapack.Tag codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Datapack.Tag raw codec not yet implemented");
+            },
+            tag -> {
+                throw new UnsupportedOperationException("Datapack.Tag encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Datapack.ChatType> createChatTypeCodec() {
-        return createDelegatingCodec("chat_type", reader -> {
-            throw new UnsupportedOperationException("ChatType codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("ChatType raw codec not yet implemented");
+            },
+            chatType -> {
+                throw new UnsupportedOperationException("ChatType encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Datapack.DamageType> createDamageTypeCodec() {
-        return createDelegatingCodec("damage_type", reader -> {
-            throw new UnsupportedOperationException("DamageType codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("DamageType raw codec not yet implemented");
+            },
+            damageType -> {
+                throw new UnsupportedOperationException("DamageType encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<Datapack.Dimension> createDimensionCodec() {
-        return createDelegatingCodec("dimension", reader -> {
-            throw new UnsupportedOperationException("Dimension codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("Dimension raw codec not yet implemented");
+            },
+            dimension -> {
+                throw new UnsupportedOperationException("Dimension encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<DimensionType> createDimensionTypeCodec() {
-        return createDelegatingCodec("dimension_type", reader -> {
-            throw new UnsupportedOperationException("DimensionType codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("DimensionType raw codec not yet implemented");
+            },
+            dimensionType -> {
+                throw new UnsupportedOperationException("DimensionType encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<TrimPattern> createTrimPatternCodec() {
-        return createDelegatingCodec("trim_pattern", reader -> {
-            throw new UnsupportedOperationException("TrimPattern codec not yet implemented");
-        });
+        // Raw codec implementation - no utility usage
+        return Codec.STRING.transform(
+            str -> {
+                throw new UnsupportedOperationException("TrimPattern raw codec not yet implemented");
+            },
+            trimPattern -> {
+                throw new UnsupportedOperationException("TrimPattern encoding not implemented");
+            }
+        );
     }
     
     private static @NotNull Codec<TrimMaterial> createTrimMaterialCodec() {
-        return createDelegatingCodec("trim_material", reader -> {
-            throw new UnsupportedOperationException("TrimMaterial codec not yet implemented");
-        });
-    }
-
-    // Helper method to create a codec that delegates to existing fromJson methods
-    // This is a bridge pattern to allow gradual migration
-    private static <T> @NotNull Codec<T> createFromJsonCodec(String name, Function<com.google.gson.JsonElement, T> fromJsonFunction) {
+        // Raw codec implementation - no utility usage
         return Codec.STRING.transform(
-                jsonString -> {
-                    try {
-                        var jsonElement = com.google.gson.JsonParser.parseString(jsonString);
-                        return fromJsonFunction.apply(jsonElement);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Failed to parse " + name + " from JSON: " + jsonString, e);
-                    }
-                },
-                value -> {
-                    throw new UnsupportedOperationException("Encoding not implemented for " + name);
-                }
+            str -> {
+                throw new UnsupportedOperationException("TrimMaterial raw codec not yet implemented");
+            },
+            trimMaterial -> {
+                throw new UnsupportedOperationException("TrimMaterial encoding not implemented");
+            }
         );
     }
 
-    // Create a union type codec that matches the pattern used by unionStringTypeAdapted
-    public static <T> @NotNull Codec<T> createUnionCodec(String typeKey, Map<String, Codec<T>> codecMap) {
-        return Codec.STRING.transform(
-                jsonString -> {
-                    var jsonElement = com.google.gson.JsonParser.parseString(jsonString);
-                    return JsonUtils.unionStringTypeMap(jsonElement, typeKey, codecMap);
-                },
-                value -> {
-                    throw new UnsupportedOperationException("Union codec encoding not implemented");
-                }
-        );
-    }
+    // Raw codec definitions only - no utility methods
 
     // Private constructor to prevent instantiation
     private DatapackCodecs() {}

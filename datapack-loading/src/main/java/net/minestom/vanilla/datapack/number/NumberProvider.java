@@ -1,7 +1,7 @@
 package net.minestom.vanilla.datapack.number;
 
 import com.squareup.moshi.JsonReader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 
 import java.io.IOException;
 import java.util.Map;

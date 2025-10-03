@@ -11,7 +11,7 @@ import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.registry.RegistryKey;
 import net.minestom.vanilla.datapack.DatapackLoader;
-import net.minestom.vanilla.datapack.json.JsonUtils;
+import net.minestom.vanilla.datapack.DatapackCodecs;
 import net.minestom.vanilla.datapack.json.Optional;
 import net.minestom.vanilla.datapack.loot.context.LootContext;
 import net.minestom.vanilla.datapack.number.NumberProvider;
@@ -89,7 +89,7 @@ interface InBuiltPredicates {
 
             static Property fromJson(JsonReader reader) throws Exception {
                 return JsonUtils.typeMapMapped(reader, Map.of(
-                        JsonReader.Token.STRING, (JsonUtils.IoFunction<JsonReader, Property>) json -> new Value(json.nextString()),
+                        JsonReader.Token.STRING, (DatapackLoader.IoFunction<JsonReader, Property>) json -> new Value(json.nextString()),
                         JsonReader.Token.BEGIN_OBJECT, DatapackLoader.moshi(Range.class)
                 ));
             }
