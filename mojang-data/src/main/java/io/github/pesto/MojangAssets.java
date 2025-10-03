@@ -45,7 +45,7 @@ final class MojangAssets {
                 downloadJar(versionInfo, jar);
             }
 
-            return FileSystem.fromZipFile(jar, path -> path.startsWith("data/minecraft/")).folder("data");
+            return FileSystem.fromZipFile(jar, path -> path.startsWith("data/")).folder("data");
 
         } catch (IOException e) {
             exitError(e.getMessage());
@@ -93,8 +93,16 @@ final class MojangAssets {
      */
     private void downloadJar(JsonObject versionInfo, @NotNull File destination) throws IOException {
         JsonObject downloads = versionInfo.getAsJsonObject("downloads");
-        JsonObject client = downloads.getAsJsonObject("client");
-        String url = client.get("url").getAsString();
+        
+        // Get server JAR (contains full datapack contents) - no fallback to client JAR
+        JsonObject serverJar = downloads.getAsJsonObject("server");
+        
+        if (serverJar == null) {
+            throw new IOException("Server JAR not available for this version. Server JAR is required for complete datapack contents including loot tables, advancements, and structures.");
+        }
+        
+        String url = serverJar.get("url").getAsString();
+        System.out.println("Downloading server JAR for complete datapack contents...");
 
         // Create if it doesn't exist
         if (!destination.exists()) {
@@ -110,7 +118,7 @@ final class MojangAssets {
             ByteBuffer buffer = ByteBuffer.allocateDirect(connection.getContentLength());
 
             double totalMB = (double) connection.getContentLengthLong() / 1024 / 1024;
-            Loading.start(String.format("Downloading vanilla jar (%.2f MB)...", totalMB));
+            Loading.start(String.format("Downloading vanilla server jar (%.2f MB)...", totalMB));
             long pos = 0;
             long segmentCompleted = 0;
             while (true) {
@@ -136,7 +144,7 @@ final class MojangAssets {
 
             boolean success = destination.exists() && destination.length() == connection.getContentLengthLong();
             if (!success)
-                throw new IOException("Failed to download client JAR");
+                throw new IOException("Failed to download server JAR");
         }
     }
 
